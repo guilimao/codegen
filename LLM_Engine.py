@@ -2,10 +2,12 @@ from openai import OpenAI
 import os
 
 # 设置你的 OpenAI API key（推荐用环境变量）
-client = OpenAI(api_key="sk-955bdac16e5e42dd8b393488d764ea9f", base_url="https://api.deepseek.com")
+DEEPSEEK_API_KEY = os.environ["DEEPSEEK_API_KEY"]
+client = OpenAI(api_key=DEEPSEEK_API_KEY, base_url="https://api.deepseek.com")
 
 def call_llm(prompt: str, system:str = " ",json_output:bool = False,model: str = "deepseek-chat", temperature: float = 0.7) -> str:
     try:
+        print("LLM调用中")
         if json_output:
             response = client.chat.completions.create(
               model=model,

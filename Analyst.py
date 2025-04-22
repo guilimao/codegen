@@ -21,9 +21,8 @@ SYSTEM_PROMPT = """你是一个需求分析师，负责从用户输入的需求�
     "优先使用某某技术",
     "尽量避免外部依赖"
   ],
-  "questions_for_user": [
-    "用自然语言简单描述上述结果",
-    "对可能的改进，简短询问用户意见"
+  "summary": [
+    "用自然语言简单描述上述结果"
   ]
 }"""
 
@@ -72,8 +71,8 @@ def pretty_print_analysis(result: dict):
     for i, constraint in enumerate(result.get('technical_constraints', []), 1):
         print(f"{i}. {constraint}")
     
-    print("\n❓ 需要确认的问题:")
-    for i, question in enumerate(result.get('questions_for_user', []), 1):
+    print("\n❓ 总结:")
+    for i, question in enumerate(result.get('summary', []), 1):
         print(f"{i}. {question}")
 
 if __name__ == "__main__":

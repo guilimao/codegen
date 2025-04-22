@@ -27,18 +27,6 @@ ARCHITECTURE_PROMPT = """
         }
       ]
     }
-  ],
-  "data_models": [
-    {
-      "name": "数据模型名称",
-      "fields": [
-        {
-          "name": "字段名",
-          "type": "数据类型",
-          "description": "字段用途"
-        }
-      ]
-    }
   ]
 }
 """
@@ -93,13 +81,6 @@ def pretty_print_architecture(result: dict):
         print("接口:")
         for interface in module.get('interfaces', []):
             print(f"  {interface.get('method', '')} {interface.get('endpoint', '')} - {interface.get('description', '')}")
-    
-    print("\n🗃️ 数据模型:")
-    for model in result.get('data_models', []):
-        print(f"\n模型名称: {model.get('name', '')}")
-        print("字段:")
-        for field in model.get('fields', []):
-            print(f"  {field.get('name', '')}: {field.get('type', '')} - {field.get('description', '')}")
 
 if __name__ == "__main__":
     # 示例用法
