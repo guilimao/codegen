@@ -21,13 +21,25 @@ ARCHITECTURE_PROMPT = """
       "interfaces": [
         {
           "name": "接口名称",
-          "method": ".......",
+          "method": "GET/POST/PUT/DELETE",
           "endpoint": "URL 或接口路径",
           "description": "接口功能简要说明"
         }
       ]
     }
   ],
+  "data_models": [
+    {
+      "name": "数据模型名称",
+      "fields": [
+        {
+          "name": "字段名",
+          "type": "数据类型",
+          "description": "字段用途"
+        }
+      ]
+    }
+  ]
 }
 """
 

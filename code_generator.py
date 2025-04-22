@@ -1,54 +1,78 @@
-import json
-from LLM_Engine import call_llm
+# main.py
+from Software_Architect import design_architecture
+from Project_Builder import ProjectBuilder
+from task_scheduler import TaskScheduler
 
-class CodeGenerator:
-    """代码生成器，使用LLM生成代码"""
+def build_project(architecture: Dict):
+    """主函数：构建整个项目"""
+    # 1. 创建项目结构
+    builder = ProjectBuilder(architecture)
+    if not builder.create_project_structure():
+        print("❌ 项目结构创建失败")
+        return
     
-    CODE_GENERATION_PROMPT = """
-    你是一位经验丰富的软件开发工程师，现在需要根据任务描述和架构设计生成高质量的代码。
+    print("✅ 项目结构创建完成")
     
-    请遵循以下要求：
-    1. 只返回可以运行的代码内容
-    2. 代码应符合架构设计中指定的技术栈
-    3. 代码应具有良好的结构和可读性
-    4. 包含必要的错误处理和日志记录
+    # 2. 初始化任务调度器
+    scheduler = TaskScheduler(architecture)
     
-    当前任务：{task_description}
-    技术栈：{tech_stack}
-    架构上下文：{architecture_context}
-    """
-    
-    def __init__(self, architecture: dict):
-        self.architecture = architecture
-        self.tech_stack = architecture.get('tech_stack', {})
-    
-    def generate_code(self, task: dict) -> str:
-        """生成代码"""
-        try:
-            # 准备提示词
-            prompt = self._prepare_prompt(task)
-            
-            # 调用LLM引擎
-            response = call_llm(
-                prompt=prompt,
-                system="你是一位专业的软件开发工程师，负责根据架构设计生成代码。",
-                temperature=0.2  # 使用较低的温度值以获得更稳定的输出
-            )
-            
-            return response
-        except Exception as e:
-            return f"# 代码生成失败: {str(e)}"
-    
-    def _prepare_prompt(self, task: dict) -> str:
-        """根据任务准备提示词"""
-        task_description = task.get('description', '')
-        tech_stack_str = ", ".join(f"{k}: {v}" for k, v in self.tech_stack.items())
+    # 3. 处理任务队列
+    while scheduler.has_tasks():
+        task = scheduler.get_next_task()
+        print(f"\n🔄 正在处理任务: {task.get('description', '')}")
         
-        # 根据任务类型添加上下文
-        context = {
-            'task_description': task_description,
-            'tech_stack': tech_stack_str,
-            'architecture_context': json.dumps(task, ensure_ascii=False)
-        }
+        # 生成代码
+        code = scheduler.generate_code_for_task(task)
         
-        return self.CODE_GENERATION_PROMPT.format(**context)
+        # 保存代码到文件
+        file_path = builder.get_file_path_for_task(task)
+        if file_path:
+            try:
+                with open(file_path, 'w', encoding='utf-8') as f:
+                    f.write(code)
+                print(f"✅ 代码已保存到: {file_path}")
+            except Exception as e:
+                print(f"❌ 保存文件失败: {str(e)}")
+
+if __name__ == "__main__":
+    # 示例用法
+    # 模拟架构设计输入
+    sample_architecture = {
+        "project_name": "TaskManagementSystem",
+        "tech_stack": {
+            "frontend": "React",
+            "backend": "Python Flask",
+            "database": "PostgreSQL",
+            "communication": "REST API",
+            "infrastructure": "Docker"
+        },
+        "modules": [
+            {
+                "name": "User Management",
+                "description": "处理用户注册、登录和权限管理",
+                "interfaces": [
+                    {
+                        "name": "register",
+                        "method": "POST",
+                        "endpoint": "/api/users/register",
+                        "description": "注册新用户"
+                    }
+                ]
+            }
+        ],
+        "data_models": [
+            {
+                "name": "User",
+                "fields": [
+                    {
+                        "name": "id",
+                        "type": "Integer",
+                        "description": "用户唯一标识"
+                    }
+                ]
+            }
+        ]
+    }
+    
+    # 构建项目
+    build_project(sample_architecture)

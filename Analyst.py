@@ -17,6 +17,14 @@ SYSTEM_PROMPT = """你是一个需求分析师，负责从用户输入的需求�
     "可选功能1",
     "可选功能2"
   ],
+  "technical_constraints": [
+    "优先使用某某技术",
+    "尽量避免外部依赖"
+  ],
+  "questions_for_user": [
+    "用自然语言简单描述上述结果",
+    "对可能的改进，简短询问用户意见"
+  ]
 }"""
 
 def analyze_requirements(user_input: str) -> dict:
@@ -42,8 +50,33 @@ def analyze_requirements(user_input: str) -> dict:
     except Exception as e:
         return {"error": f"分析过程异常: {str(e)}"}
 
+def pretty_print_analysis(result: dict):
+    """美化输出分析结果"""
+    if "error" in result:
+        print(f"❌ 错误信息: {result['error']}")
+        return
+        
+    print("\n🔍 需求分析结果:")
+    print(f"项目名称: {result.get('project_name', '')}")
+    print(f"项目描述: {result.get('description', '')}")
+    
+    print("\n🌟 核心功能:")
+    for i, feature in enumerate(result.get('core_features', []), 1):
+        print(f"{i}. {feature}")
+    
+    print("\n📦 可选功能:")
+    for i, feature in enumerate(result.get('optional_features', []), 1):
+        print(f"{i}. {feature}")
+    
+    print("\n⚙️ 技术约束:")
+    for i, constraint in enumerate(result.get('technical_constraints', []), 1):
+        print(f"{i}. {constraint}")
+    
+    print("\n❓ 需要确认的问题:")
+    for i, question in enumerate(result.get('questions_for_user', []), 1):
+        print(f"{i}. {question}")
 
 if __name__ == "__main__":
     user_input = input("请输入您的需求描述: ")
     analysis = analyze_requirements(user_input)
-    print(json.dumps(analysis, ensure_ascii=False, indent=2))
+    pretty_print_analysis(analysis)
